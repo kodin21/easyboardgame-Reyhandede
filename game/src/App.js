@@ -11,7 +11,7 @@ export default class App extends Component {
         WIDTH: 7,
         HEGIHT: 7,
         BOARD: [],
-        APPLE: { x: 7, y: 7 },
+        CHEESE: { x: 7, y: 7 },
         CHARACTER: [{ x: 2, y: 4 }],
         SCORE: 0,
         ON_GAME: false,
@@ -21,7 +21,7 @@ export default class App extends Component {
             ? JSON.parse(localStorage.getItem("scores"))
             : [],
     };
-    isSnakeInThisPosition = (pos) =>
+    isCharacterInThisPosition = (pos) =>
         this.state.CHARACTER.find((part) => part.x === pos.x && part.y === pos.y);
     drawScore = () =>
         this.state.HIGH_SCORES.map((score, i) => [
@@ -30,12 +30,12 @@ export default class App extends Component {
         ]);
     componentDidMount = () => this.tick();
 
-    //dursun
+    //Board oluşturuldu.
     drawBoard() {
         const board = [];
         for (let y = 0; y < this.state.HEGIHT; y++) {
             for (let x = 0; x < this.state.WIDTH; x++) {
-                if (x === this.state.APPLE.x && y === this.state.APPLE.y) {
+                if (x === this.state.CHEESE.x && y === this.state.CHEESE.y) {
                     board.push("🧀");
                     continue;
                 }
@@ -57,16 +57,16 @@ export default class App extends Component {
         }
         return board;
     }
-    //Dursun
-    locateApple() {
-        const APPLE = { x: 0, y: 0 };
+    //Peynir için rastgele konumlar atandı.
+    locateCheese() {
+        const CHEESE = { x: 0, y: 0 };
         do {
-            APPLE.x = parseInt(Math.random() * this.state.WIDTH);
-            APPLE.y = parseInt(Math.random() * this.state.HEGIHT);
-        } while (this.isSnakeInThisPosition(APPLE));
-        this.setState({ APPLE });
+            CHEESE.x = parseInt(Math.random() * this.state.WIDTH);
+            CHEESE.y = parseInt(Math.random() * this.state.HEGIHT);
+        } while (this.isCharacterInThisPosition(CHEESE));
+        this.setState({ CHEESE });
     }
-    //dursun
+    //Oyun bittiğinde yeni oyuna geçildi.
     newGame = () => {
         if (this.state.ON_GAME) return;
         this.setState({
@@ -74,20 +74,20 @@ export default class App extends Component {
             SCORE: 0,
             CHARACTER: [{ x: 5, y: 5 }],
         });
-        this.locateApple();
+        this.locateCheese();
     };
 
 
-    //Dursun
+    //Peynir yendikçe skor arttırıldı.
     step() {
         if (
-            this.state.APPLE.x === this.state.CHARACTER[0].x &&
-            this.state.APPLE.y === this.state.CHARACTER[0].y
+            this.state.CHEESE.x === this.state.CHARACTER[0].x &&
+            this.state.CHEESE.y === this.state.CHARACTER[0].y
         ) {
             this.setState({
                 SCORE: this.state.SCORE + 1,
             });
-            this.locateApple();
+            this.locateCheese();
         }
     }
     gameOver = () => {
@@ -99,7 +99,7 @@ export default class App extends Component {
         this.setState({
             WIDTH: 7,
             HEGIHT: 7,
-            APPLE: { x: 1, y: 1 },
+            CHEESE: { x: 1, y: 1 },
             CHARACTER: [{ x: 5, y: 5 }],
             SCORE: 0,
             ON_GAME: false,
@@ -109,6 +109,7 @@ export default class App extends Component {
             HIGH_SCORES,
         });
     };
+    //Butonlara özellikler eklendi.
     move(direction) {
         if (!this.state.ON_GAME) return;
 
@@ -157,7 +158,7 @@ export default class App extends Component {
                 default:
                     break;
             }
-            if (this.isSnakeInThisPosition(nextPos)) this.gameOver();
+            if (this.isCharacterInThisPosition(nextPos)) this.gameOver();
             else {
                 CHARACTER.unshift(nextPos);
                 if (CHARACTER.length > this.state.SCORE + 1) CHARACTER.pop();
